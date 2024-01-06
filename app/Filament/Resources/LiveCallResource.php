@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use App\Filament\Resources\LiveCallResource\Pages;
+use App\Filament\Resources\LiveCallResource\RelationManagers;
+use App\Models\Campaign;
+use App\Models\LiveCall;
+use App\Models\Target;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class LiveCallResource extends Resource
+{
+    protected static ?string $model = LiveCall::class;
+
+    protected static ?string $navigationGroup = 'Reports';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('customerid', auth()->id());
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('start_time')
+                    ->label('Start Time')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('answer_time')
+                    ->label('Answer Time')
+                    ->dateTime()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('callerid')
+                    ->label('Caller#')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('did')
+                    ->label('DID')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('target')
+                    ->label('Target')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('campaign.camp_name')
+                    ->label('Campaign')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('buyername')
+                    ->label('Buyer')
+                    ->searchable(isIndividual: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\Action::make('hangup')
+                    ->label('Hangup')
+                    ->button()
+                    ->action(function (LiveCall $record, array $data): void {
+                        $record->hangup();
+                    })
+                ->color('danger'),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListLiveCalls::route('/'),
+        ];
+    }
+}
