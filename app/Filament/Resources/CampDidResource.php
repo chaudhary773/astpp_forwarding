@@ -46,7 +46,7 @@ class CampDidResource extends Resource
         return $table
             ->defaultGroup(
                 Tables\Grouping\Group::make('campaign.camp_name')
-                    ->collapsible()
+                    ->collapsible(true)
                     ->titlePrefixedWithLabel(false)
             )
             ->columns([

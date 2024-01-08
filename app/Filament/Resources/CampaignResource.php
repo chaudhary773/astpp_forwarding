@@ -55,20 +55,22 @@ class CampaignResource extends Resource
                     ->label('Campaign Strategy')
                     ->required()
                     ->native(false)
-                    ->options(['1' => 'Priority', '2' => 'Weight']),
+                    ->options([1 => 'Priority', 2 => 'Weight']),
                 Forms\Components\TextInput::make('call_timeout')
                     ->label('Call Timeout')
                     ->required()
-                    ->default('60')
+                    ->default(60)
                     ->numeric(),
                 Forms\Components\TextInput::make('ring_timeout')
                     ->label('Ring Timeout')
                     ->required()
-                    ->default('30')
+                    ->default(30)
                     ->numeric(),
-                Forms\Components\Toggle::make('threading')
-                ->label('Call Threading'),
-                Forms\Components\Toggle::make('active'),
+                Forms\Components\Hidden::make('threading')
+                    ->default(1)
+                    ->label('Call Threading'),
+                Forms\Components\Toggle::make('active')
+                ->default(true),
                 Forms\Components\Hidden::make('customer_id')
                 ->default(function () { return auth()->id() ; }),
             ]);

@@ -7,3 +7,10 @@
 - **Rename campid to campaign_id in table target**
 - **make null modifieddate in table target**
 - **make campaignname null in table target**
+
+***table Campaign***
+- **convert customer_id into bigint**
+- **convert calltimeout, ringtimeout into int**
+- **convert threading, active into tinyint**
+- **convert camp-mode into smallint or int**
+

@@ -10,8 +10,6 @@ class CampDid extends Pivot
     public $table = 'campaign_did';
     public $incrementing = true;
 
-    public $timestamps = false;
-
     protected $guarded = [];
 
     public function campaign():BelongsTo

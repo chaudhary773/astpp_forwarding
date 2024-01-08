@@ -17,9 +17,11 @@ class Campaign extends Model
     protected $primaryKey = 'id';
 
     protected $hidden = ['pivot'];
-    public $timestamps = false;
 
     protected $guarded = [];
+
+    const CREATED_AT = 'create_date';
+    const UPDATED_AT = 'modified_date';
 
     public function accounts(): BelongsTo
     {

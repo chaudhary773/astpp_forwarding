@@ -17,6 +17,9 @@ class Did extends Model
     protected $hidden = ['pivot'];
     protected  $guarded = [];
 
+    const CREATED_AT = 'assign_date';
+    const UPDATED_AT = 'last_modified_date';
+
     public function user(): BelongsTo
     {
         return $this->BelongsTo(User::class, 'accountid', 'id');
