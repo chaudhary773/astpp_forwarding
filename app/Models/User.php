@@ -65,4 +65,10 @@ class User extends Authenticatable implements HasName
     {
         return  $this->hasMany(Did::class, 'accountid');
     }
+
+    public function call_block(): HasMany
+    {
+        return  $this->hasMany(CallBlock::class, 'customer_id');
+    }
+
 }

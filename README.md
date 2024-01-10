@@ -14,3 +14,7 @@
 - **convert threading, active into tinyint**
 - **convert camp-mode into smallint or int**
 
+***table call_block***
+- **convert customer_id into bigint**
+- **convert status into tinyint**
+
