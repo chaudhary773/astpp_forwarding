@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use mysql_xdevapi\Collection;
+use mysql_xdevapi\CollectionAdd;
 
 class Campaign extends Model
 {
@@ -28,24 +30,22 @@ class Campaign extends Model
         return $this->BelongsTo(User::class, 'customer_id', 'id');
     }
 
-//    public function dids(): BelongsToMany
-//    {
-//        return $this->BelongsToMany(CampDid::class, 'did_assign')->withPivot('camp_id', 'did_id');
-//    }
-
 
     public function did(): HasMany
     {
         return $this->HasMany(CampDid::class, 'did_id');
     }
 
-    public function dids(): BelongsToMany
+
+    public function dids()
     {
-        return $this->belongsToMany(Did::class);
+        return $this->belongsToMany(Did::class, 'campaign_did', 'campaign_id', 'did_id');
     }
 
     public function target(): HasOne
     {
         return $this->hasOne(Target::class);
     }
+
+
 }

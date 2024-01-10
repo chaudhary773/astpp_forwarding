@@ -50,9 +50,11 @@ class CDRResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('campname')
-                    ->label('Campaign'),
+                    ->label('Campaign')
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('buyername')
-                    ->label('Buyer'),
+                    ->label('Buyer')
+                    ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('billseconds')
                     ->label('Bill Sec')
                  //   ->summarize(Sum::make())
@@ -70,9 +72,11 @@ class CDRResource extends Resource
                 Tables\Columns\TextColumn::make('reason')
                     ->label('Reason')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('recordingfile')
-                    ->label('Recording')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\IconColumn::make('recordingfile')
+                    ->label('Download')
+                    ->color('info')
+                    ->icon(static fn (CDR $record): string|null => $record->recordingfile !== null ? 'heroicon-m-cloud-arrow-down' : null)
+                    ->url(fn (CDR $record) => env('RECORDING_URL') . "/{$record->recordingfile}"),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('buyerid')
@@ -122,7 +126,12 @@ class CDRResource extends Resource
                     }),
             ])
             ->actions([
-//                Tables\Actions\EditAction::make(),
+//                Tables\Actions\Action::make('download')
+//                    ->label('Download')
+//                    // ->icon('heroicon-')
+//                    ->action(function (Cdr $record, array $data): void {
+//                            $record->download();
+//                    })
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -149,5 +158,10 @@ class CDRResource extends Resource
         return [
             'index' => Pages\ListCDRS::route('/'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

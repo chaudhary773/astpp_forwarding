@@ -78,4 +78,9 @@ class DidResource extends Resource
             'index' => Pages\ListDids::route('/'),
         ];
     }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 }

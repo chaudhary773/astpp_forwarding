@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,13 +26,15 @@ class Did extends Model
         return $this->BelongsTo(User::class, 'accountid', 'id');
     }
 
-//    public function campaigns(): HasMany
-//    {
-//        return $this->HasMany(Campaign::class, 'did_id', 'id');
-//    }
-
-    public function campaign(): BelongsTo
+    public function campaigns(): BelongsToMany
     {
-        return $this->belongsTo(Campaign::class);
+        return $this->belongsToMany(Campaign::class, 'campaign_did', 'did_id', 'campaign_id');
     }
+
+    public static function scopeAllDids(Builder $query): void
+    {
+        $query->where('accountid', auth()->id())->where('call_type', '=', 6);
+    }
+
+
 }

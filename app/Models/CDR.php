@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class CDR extends Model
 {
@@ -21,6 +22,7 @@ class CDR extends Model
         'missed' => 'boolean',
     ];
 
+
     public function campaign() : BelongsTo
     {
         return $this->belongsTo(Campaign::class, 'campid', 'id');
@@ -30,4 +32,9 @@ class CDR extends Model
         return $this->belongsTo(Target::class, 'buyerid', 'id');
     }
 
+
+    public function download(): BinaryFileResponse
+    {
+        return response()->download( );
+    }
 }

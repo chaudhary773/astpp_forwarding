@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Services\CallHangup;
 
 class LiveCall extends Model
 {
@@ -27,5 +28,10 @@ class LiveCall extends Model
     public function target() : BelongsTo
     {
         return $this->belongsTo(Target::class, 'buyerid', 'id');
+    }
+
+    public function hangup($call_id): void
+    {
+        CallHangup::hangup($this->call_id);
     }
 }

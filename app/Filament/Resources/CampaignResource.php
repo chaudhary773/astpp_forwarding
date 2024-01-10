@@ -5,16 +5,17 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CampaignResource\Pages;
 use App\Filament\Resources\CampaignResource\RelationManagers;
 use App\Models\Campaign;
+use App\Models\CampDid;
 use App\Models\Did;
 use App\Models\Target;
-use Filament\Actions\Action;
+use Doctrine\DBAL\Query;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Livewire\Livewire;
 
 class CampaignResource extends Resource
 {
@@ -27,6 +28,8 @@ class CampaignResource extends Resource
         return parent::getEloquentQuery()->where('customer_id', auth()->id());
     }
 
+
+
     public function getTargetCounts($record): Builder
     {
         return Target::where('campaign_id', $record->id)->get();
@@ -34,6 +37,8 @@ class CampaignResource extends Resource
 
     public static function form(Form $form): Form
     {
+     $unassignedDids = Did::allDids()->whereDoesntHave('campaigns')->pluck('number', 'id')->toArray();
+
         return $form
             ->schema([
                 Forms\Components\TextInput::make('camp_name')
@@ -47,7 +52,7 @@ class CampaignResource extends Resource
                 Forms\Components\Select::make('did_id')
                     ->relationship('dids', 'number')
                     ->multiple()
-                    ->options(fn() => Did::where('accountid', auth()->id())->pluck('number', 'id'))
+                    ->options(fn() => $unassignedDids)
                     ->preload()
                     ->searchable(),
 
@@ -75,6 +80,8 @@ class CampaignResource extends Resource
                 ->default(function () { return auth()->id() ; }),
             ]);
     }
+
+
 
     public static function table(Table $table): Table
     {
@@ -111,94 +118,90 @@ class CampaignResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\Action::make('add_target')
-                    ->label('Add Target')
-                    ->icon('heroicon-o-users')
-                    ->action(function (Campaign $record, array $data): void {
-
-                       $target = Target::firstOrCreate([
-                            'name' => $data['name'],
-                           'number' => $data['number'],
-                           'campaign_id' => $record->id,
-                           'customerid' => auth()->id(),
-                           'active' => $data['active'],
-                           'daily_cap' => $data['daily_cap'],
-                           'monthlycap' => $data['monthlycap'],
-                           'concurrent_calls' => $data['concurrent_calls'],
-                           'priority' => $data['priority'],
-                           'calltimeout' => '60',
-                           'ringtimeout' => '30',
-                           'callcontrol' => '1',
-                           'calltype' => '1',
-                           'campaignname' => $record->camp_name,
-                        ]);
-                    })
-                    ->form([
-                        Forms\Components\TextInput::make('name')
-                            ->required()
-                            ->maxLength(200),
-                        Forms\Components\TextInput::make('number')
-                            ->required()
-                            ->maxLength(14),
-                        Forms\Components\TextInput::make('daily_cap')
-                            ->label('Daily Cap')
-                            ->required()
-                            ->hint('0 = unlimited')
-                            ->default(1)
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100),
-                        Forms\Components\TextInput::make('monthlycap')
-                            ->label('Monthly Cap')
-                            ->required()
-                            ->hint('0 = unlimited')
-                            ->default(1)
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100),
-                        Forms\Components\TextInput::make('concurrent_calls')
-                            ->label('Concurrent Calls')
-                            ->required()
-                            ->default(1)
-                            ->numeric()
-                            ->minValue(0)
-                            ->maxValue(100),
-
-                        Forms\Components\TextInput::make('priority')
-                            ->required()
-                            ->numeric()
-                            ->default(1)
-                            ->minValue(0)
-                            ->maxValue(100),
-
-                        Forms\Components\TextInput::make('ringtimeout')
-                            ->label('Ring Timeout')
-                            ->required()
-                            ->numeric()
-                            ->default('30')
-                            ->minValue(0)
-                            ->maxValue(100),
-
-                        Forms\Components\TextInput::make('calltimeout')
-                            ->label('Call Timeout')
-                            ->required()
-                            ->numeric()
-                            ->default('30')
-                            ->minValue(0)
-                            ->maxValue(100),
-
-                        Forms\Components\Toggle::make('active')
-                            ->label('Active')
-                            ->default(true),
-
-//                        Forms\Components\Select::make('target')
-//                            ->label('Target')
-//                            ->options(Target::where('Customerid', auth()->id())->get()->pluck('name', 'id', 'number'))
-//                            ->required(),
-                    ]),
+//                Tables\Actions\Action::make('add_target')
+//                    ->label('Add Target')
+//                    ->icon('heroicon-o-users')
+//                    ->action(function (Campaign $record, array $data): void {
+//
+//                       $target = Target::firstOrCreate([
+//                            'name' => $data['name'],
+//                           'number' => $data['number'],
+//                           'campaign_id' => $record->id,
+//                           'customerid' => auth()->id(),
+//                           'active' => $data['active'],
+//                           'daily_cap' => $data['daily_cap'],
+//                           'monthlycap' => $data['monthlycap'],
+//                           'concurrent_calls' => $data['concurrent_calls'],
+//                           'priority' => $data['priority'],
+//                           'calltimeout' => '60',
+//                           'ringtimeout' => '30',
+//                           'callcontrol' => '1',
+//                           'calltype' => '1',
+//                           'campaignname' => $record->camp_name,
+//                        ]);
+//                    })
+//                    ->form([
+//                        Forms\Components\TextInput::make('name')
+//                            ->required()
+//                            ->maxLength(200),
+//                        Forms\Components\TextInput::make('number')
+//                            ->required()
+//                            ->maxLength(14),
+//                        Forms\Components\TextInput::make('daily_cap')
+//                            ->label('Daily Cap')
+//                            ->required()
+//                            ->hint('0 = unlimited')
+//                            ->default(1)
+//                            ->numeric()
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//                        Forms\Components\TextInput::make('monthlycap')
+//                            ->label('Monthly Cap')
+//                            ->required()
+//                            ->hint('0 = unlimited')
+//                            ->default(1)
+//                            ->numeric()
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//                        Forms\Components\TextInput::make('concurrent_calls')
+//                            ->label('Concurrent Calls')
+//                            ->required()
+//                            ->default(1)
+//                            ->numeric()
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//
+//                        Forms\Components\TextInput::make('priority')
+//                            ->required()
+//                            ->numeric()
+//                            ->default(1)
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//
+//                        Forms\Components\TextInput::make('ringtimeout')
+//                            ->label('Ring Timeout')
+//                            ->required()
+//                            ->numeric()
+//                            ->default('30')
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//
+//                        Forms\Components\TextInput::make('calltimeout')
+//                            ->label('Call Timeout')
+//                            ->required()
+//                            ->numeric()
+//                            ->default('30')
+//                            ->minValue(0)
+//                            ->maxValue(100),
+//
+//                        Forms\Components\Toggle::make('active')
+//                            ->label('Active')
+//                            ->default(true),
+//                    ]),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -222,5 +225,10 @@ class CampaignResource extends Resource
             'create' => Pages\CreateCampaign::route('/create'),
             'edit' => Pages\EditCampaign::route('/{record}/edit'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }

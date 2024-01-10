@@ -60,12 +60,12 @@ class LiveCallResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('hangup')
-                    ->label('Hangup')
-                    ->button()
+                    ->label('')
+                    ->icon(static fn () => 'heroicon-m-phone-x-mark')
+                    ->color('danger')
                     ->action(function (LiveCall $record, array $data): void {
-                        $record->hangup();
+                        $record->hangup($record->call_id);
                     })
-                ->color('danger'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -86,5 +86,10 @@ class LiveCallResource extends Resource
         return [
             'index' => Pages\ListLiveCalls::route('/'),
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 }
