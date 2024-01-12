@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DidResource\Pages;
 use App\Filament\Resources\DidResource\RelationManagers;
+use App\Models\Campaign;
 use App\Models\Did;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -28,11 +30,7 @@ class DidResource extends Resource
 
     public static function table(Table $table): Table
     {
-//        $did = DID::with('campaigns.campaign_id')
-//            ->where('accountid', auth()->id())
-//            ->where('call_type', '=', 6)
-//            ->get();
-//        dd($did);
+
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
@@ -47,7 +45,7 @@ class DidResource extends Resource
                 Tables\Columns\TextColumn::make('campaign_id')
                     ->label('Campaign')
                     ->getStateUsing(function (Did $record) {
-                         return $record->campaigns->isNotEmpty() ? $record->campaigns->first()->camp_name : 'Not Assigned';
+                         return $record->campaigns->isNotEmpty() ? $record->campaigns->last()->camp_name : '';
                     })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('assign_date')
@@ -62,13 +60,41 @@ class DidResource extends Resource
                 //
             ])
             ->actions([
+               // Tables\Actions\EditAction::make(),
+
                 Tables\Actions\Action::make('status')
                     ->label('Toggle')
                    // ->icon('heroicon-')
                     ->action(function (Did $record, array $data): void {
                         $record->status = $record->status ? 0 : 1;
                         $record->save();
+                    }),
+
+                Tables\Actions\Action::make('attach')
+                    ->label('Assign')
+                    ->icon('heroicon-o-plus')
+                    ->color('success')
+                    ->form([
+                        Select::make('campaign_id')
+                            ->label('Campaigns')
+                            ->native(false)
+                            ->searchable()
+                            ->options(Campaign::where('customer_id', auth()->id())->pluck('camp_name', 'id'))
+                            ->required(),
+                    ])
+                    ->action(function (array $data, Did $record): void {
+                        $record->campaigns()->attach($data['campaign_id']);
+                        $record->save();
+                    }),
+                Tables\Actions\Action::make('detach')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation(true)
+                    ->action(function (array $data, Did $record): void {
+                        $record->campaigns()->detach();
+                        $record->save();
                     })
+
             ])
             ->bulkActions([
 //                Tables\Actions\BulkActionGroup::make([

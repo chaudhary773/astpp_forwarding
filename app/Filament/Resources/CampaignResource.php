@@ -92,10 +92,7 @@ class CampaignResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-                // Tables\Columns\TextColumn::make('did.number')
-                //     //->relationship('did', 'number')
-                //     ->label('DID')
-                //     ->searchable(),
+
                 Tables\Columns\BadgeColumn::make('camp_mode')
                     ->label('Strategy')
                     ->getStateUsing(fn (Campaign $record): string => $record->camp_mode == 1 ? 'Priority' : 'Weight')

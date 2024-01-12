@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CDRResource\Pages;
+use App\Filament\Resources\CDRResource\Widgets\CDROverview;
 use App\Models\CDR;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -26,6 +27,8 @@ class CDRResource extends Resource
     {
         return parent::getEloquentQuery()->where('customerid', auth()->id());
     }
+
+
 
     public static function table(Table $table): Table
     {
@@ -164,4 +167,11 @@ class CDRResource extends Resource
     {
         return static::getModel()::count();
     }
+
+//    public static function getWidgets(): array
+//    {
+//        return [
+//            CDROverview::class,
+//        ];
+//    }
 }
