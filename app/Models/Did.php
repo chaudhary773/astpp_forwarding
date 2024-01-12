@@ -26,6 +26,11 @@ class Did extends Model
         return $this->BelongsTo(User::class, 'accountid', 'id');
     }
 
+//    public function campaign(): BelongsTo
+//    {
+//        return $this->BelongsTo(Campaign::class, );
+//    }
+
     public function campaigns(): BelongsToMany
     {
         return $this->belongsToMany(Campaign::class, 'campaign_did', 'did_id', 'campaign_id');

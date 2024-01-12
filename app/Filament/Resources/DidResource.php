@@ -20,13 +20,19 @@ class DidResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('accountid', auth()->id())->where('call_type', '=', 6);
+
+        return parent::getEloquentQuery()->with('campaigns')->where('accountid', auth()->id())->where('call_type', '=', 6);
     }
 
 
 
     public static function table(Table $table): Table
     {
+//        $did = DID::with('campaigns.campaign_id')
+//            ->where('accountid', auth()->id())
+//            ->where('call_type', '=', 6)
+//            ->get();
+//        dd($did);
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
@@ -37,7 +43,13 @@ class DidResource extends Resource
                     ->colors([
                         'success' => 'Active',
                         'danger' => 'Inactive',
-                    ]),
+                        ]),
+                Tables\Columns\TextColumn::make('campaign_id')
+                    ->label('Campaign')
+                    ->getStateUsing(function (Did $record) {
+                         return $record->campaigns->isNotEmpty() ? $record->campaigns->first()->camp_name : 'Not Assigned';
+                    })
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('assign_date')
                     ->dateTime()
                     ->sortable()
@@ -81,6 +93,6 @@ class DidResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return static::getModel()::allDids()->count();
     }
 }

@@ -53,7 +53,25 @@ class LiveCallResource extends Resource
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('buyername')
                     ->label('Buyer')
-                    ->searchable(isIndividual: true),
+                    ->searchable(isIndividual: true)
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('')
+                    ->label('Duration')
+                    ->getStateUsing(function (LiveCall $record) {
+                        $startDate = new \DateTime($record['start_time']);
+                        $endDate = new \DateTime($record['answer_time']);
+                        $interval = $startDate->diff($endDate);
+                        return $record->answered == 1 ? $interval->format('%H:%I:%S') : 0;
+                    }),
+
+                Tables\Columns\BadgeColumn::make('answered')
+                    ->label('Call Status')
+                    ->sortable()
+                    ->getStateUsing(fn (LiveCall $record): string => $record->answered == 1 ? 'Answered' : 'Ringing')
+                    ->colors([
+                        'success' => 'Answered',
+                        'warning' => 'Ringing',
+                    ]),
             ])
             ->filters([
                 //

@@ -38,6 +38,7 @@ class CallBlockResource extends Resource
                 Forms\Components\TextInput::make('number')
                     ->label('Number')
                     ->required()
+                    ->unique()
                     ->tel(),
                 Forms\Components\TextInput::make('description')
                     ->label('Description')

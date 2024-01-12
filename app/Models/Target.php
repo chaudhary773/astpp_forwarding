@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +26,11 @@ class Target extends Model
     public function campaign() : BelongsTo
     {
         return $this->belongsTo(Campaign::class);
+    }
+
+    public static function scopeAllTargets(Builder $query): void
+    {
+        $query->where('customerid', auth()->id());
     }
 
 }
