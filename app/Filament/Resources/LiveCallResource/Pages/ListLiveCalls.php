@@ -16,4 +16,11 @@ class ListLiveCalls extends ListRecords
            // Actions\CreateAction::make(),
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+           LiveCallResource\Widgets\StatsOverview::class
+        ];
+    }
 }

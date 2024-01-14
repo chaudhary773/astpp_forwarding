@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Filament\Support\Facades\FilamentView;
+use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        FilamentView::registerRenderHook(
+            'panels::global-search.before',
+//            fn (): View => view('filament.topbar-stats'),
+            fn (): string => Blade::render('@livewire(\'topbar-stats\')'),
+        );
     }
 }

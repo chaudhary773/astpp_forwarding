@@ -44,12 +44,15 @@ class CDRResource extends Resource
                     ->label('Fwd. Number')
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('call_start')
+                    ->dateTime()
                     ->label('Call Start')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('call_answer')
+                    ->dateTime()
                     ->label('Call Answer'),
                 Tables\Columns\TextColumn::make('call_end')
                     ->label('Call End')
+                    ->dateTime()
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('campname')

@@ -13,7 +13,7 @@ class CDR extends Model
 
     protected $table = 'camp_cdr';
 
-    public $timestamps = false;
+   // public $timestamps = false;
 
     protected $casts = [
         'call_start' => 'datetime',
