@@ -1,3 +1,3 @@
-<div wire:poll.1s>
+<div wire:poll.60s>
     <span>{{ $serverTime }}</span>
 </div>

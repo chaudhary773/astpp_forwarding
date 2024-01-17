@@ -72,9 +72,9 @@ class CDRResource extends Resource
                     ->label('Tta')
                     ->numeric()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('disposition')
-                    ->label('Disposition')
-                    ->toggleable(isToggledHiddenByDefault: true),
+//                Tables\Columns\TextColumn::make('disposition')
+//                    ->label('Disposition')
+//                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('reason')
                     ->label('Reason')
                     ->toggleable(isToggledHiddenByDefault: true),

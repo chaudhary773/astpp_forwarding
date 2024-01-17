@@ -15,7 +15,7 @@ class DashboardChart extends ChartWidget
     protected int | string | array $columnSpan = 'full';
     protected static ?string $maxHeight = '250px';
     protected static ?string $pollingInterval = '20s';
-    protected function getFilters(): ?array
+   /* protected function getFilters(): ?array
     {
         return [
             'today' => 'Today',
@@ -23,7 +23,7 @@ class DashboardChart extends ChartWidget
             'month' => 'Last month',
             'year' => 'This year',
         ];
-    }
+    }*/
 
    // public ?string $filter = 'month';
 

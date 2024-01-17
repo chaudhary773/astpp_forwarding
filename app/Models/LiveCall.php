@@ -30,7 +30,7 @@ class LiveCall extends Model
         return $this->belongsTo(Target::class, 'buyerid', 'id');
     }
 
-    public function hangup($call_id): void
+    public function hangup(): void
     {
         CallHangup::hangup($this->call_id);
     }

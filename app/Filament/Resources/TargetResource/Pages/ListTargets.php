@@ -10,6 +10,8 @@ class ListTargets extends ListRecords
 {
     protected static string $resource = TargetResource::class;
 
+    protected static ?string $breadcrumb = null;
+
     protected function getHeaderActions(): array
     {
         return [

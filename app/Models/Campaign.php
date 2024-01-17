@@ -42,9 +42,9 @@ class Campaign extends Model
         return $this->belongsToMany(Did::class, 'campaign_did', 'campaign_id', 'did_id');
     }
 
-    public function target(): HasOne
+    public function targets(): HasMany
     {
-        return $this->hasOne(Target::class);
+        return $this->hasMany(Target::class);
     }
 
 

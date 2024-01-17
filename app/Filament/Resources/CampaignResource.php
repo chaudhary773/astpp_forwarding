@@ -28,60 +28,57 @@ class CampaignResource extends Resource
         return parent::getEloquentQuery()->where('customer_id', auth()->id());
     }
 
-
-
-    public function getTargetCounts($record): Builder
-    {
-        return Target::where('campaign_id', $record->id)->get();
-    }
-
     public static function form(Form $form): Form
     {
-     $unassignedDids = Did::allDids()->whereDoesntHave('campaigns')->pluck('number', 'id')->toArray();
+        $unassignedDids = Did::allDids()->whereDoesntHave('campaigns')->pluck('number', 'id')->toArray();
 
         return $form
             ->schema([
-                Forms\Components\TextInput::make('camp_name')
-                    ->label('Campaign Name')
-                    ->required()
-                    ->maxLength(200),
-                Forms\Components\TextInput::make('description')
-                    ->required()
-                    ->maxLength(200),
+                Forms\Components\Section::make()
+                    ->schema([
+                        Forms\Components\Grid::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('camp_name')
+                                    ->label('Campaign Name')
+                                    ->required()
+                                    ->maxLength(200),
+                                Forms\Components\TextInput::make('description')
+                                    ->required()
+                                    ->maxLength(200),
 
-                Forms\Components\Select::make('did_id')
-                    ->relationship('dids', 'number')
-                    ->multiple()
-                    ->options(fn() => $unassignedDids)
-                    ->preload()
-                    ->searchable(),
+                                Forms\Components\Select::make('did_id')
+                                    ->relationship('dids', 'number')
+                                    ->multiple()
+                                    ->options(fn() => $unassignedDids)
+                                    ->preload()
+                                    ->searchable(),
 
-                Forms\Components\Select::make('camp_mode')
-                    ->label('Campaign Strategy')
-                    ->required()
-                    ->native(false)
-                    ->options([1 => 'Priority', 2 => 'Weight']),
-                Forms\Components\TextInput::make('call_timeout')
-                    ->label('Call Timeout')
-                    ->required()
-                    ->default(60)
-                    ->numeric(),
-                Forms\Components\TextInput::make('ring_timeout')
-                    ->label('Ring Timeout')
-                    ->required()
-                    ->default(30)
-                    ->numeric(),
-                Forms\Components\Hidden::make('threading')
-                    ->default(1)
-                    ->label('Call Threading'),
-                Forms\Components\Toggle::make('active')
-                ->default(true),
-                Forms\Components\Hidden::make('customer_id')
-                ->default(function () { return auth()->id() ; }),
+                                Forms\Components\Select::make('camp_mode')
+                                    ->label('Campaign Strategy')
+                                    ->required()
+                                    ->native(false)
+                                    ->options([1 => 'Priority', 2 => 'Weight']),
+                                Forms\Components\TextInput::make('call_timeout')
+                                    ->label('Call Timeout')
+                                    ->required()
+                                    ->default(60)
+                                    ->numeric(),
+                                Forms\Components\TextInput::make('ring_timeout')
+                                    ->label('Ring Timeout')
+                                    ->required()
+                                    ->default(30)
+                                    ->numeric(),
+                                Forms\Components\Hidden::make('threading')
+                                    ->default(1)
+                                    ->label('Call Threading'),
+                                Forms\Components\Toggle::make('active')
+                                    ->default(true),
+                                Forms\Components\Hidden::make('customer_id')
+                                    ->default( auth()->id() ),
+                            ]),
+                    ]),
             ]);
     }
-
-
 
     public static function table(Table $table): Table
     {
@@ -95,15 +92,15 @@ class CampaignResource extends Resource
 
                 Tables\Columns\BadgeColumn::make('camp_mode')
                     ->label('Strategy')
-                    ->getStateUsing(fn (Campaign $record): string => $record->camp_mode == 1 ? 'Priority' : 'Weight')
+                    ->getStateUsing(fn(Campaign $record): string => $record->camp_mode == 1 ? 'Priority' : 'Weight')
                     ->colors([
                         'success' => 'Priority',
                     ]),
-            //    Tables\Columns\BooleanColumn::make('threading'),
+                //    Tables\Columns\BooleanColumn::make('threading'),
                 Tables\Columns\TextColumn::make('call_timeout'),
                 Tables\Columns\TextColumn::make('ring_timeout'),
                 Tables\Columns\ToggleColumn::make('active'),
-             //   Tables\Columns\TextColumn::make('targets_exists')->exists('targets', 'id'),
+                //   Tables\Columns\TextColumn::make('targets_exists')->exists('targets', 'id'),
                 Tables\Columns\TextColumn::make('create_date')
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -207,7 +204,6 @@ class CampaignResource extends Resource
             ]);
     }
 
-
     public static function getRelations(): array
     {
         return [
@@ -227,5 +223,10 @@ class CampaignResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::where('customer_id', auth()->id())->count();
+    }
+
+    public function getTargetCounts($record): Builder
+    {
+        return Target::where('campaign_id', $record->id)->get();
     }
 }

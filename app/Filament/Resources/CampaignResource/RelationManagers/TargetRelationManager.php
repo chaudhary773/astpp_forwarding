@@ -4,7 +4,10 @@ namespace App\Filament\Resources\CampaignResource\RelationManagers;
 
 use App\Filament\Resources\TargetResource;
 use App\Models\Campaign;
+use App\Models\Target;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -14,7 +17,7 @@ use Filament\Tables\Table;
 
 class TargetRelationManager extends RelationManager
 {
-    protected static string $relationship = 'target';
+    protected static string $relationship = 'targets';
 
 
 
@@ -112,6 +115,26 @@ class TargetRelationManager extends RelationManager
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\ReplicateAction::make()
+                    ->color('secondary')
+                 ->excludeAttributes(['name', 'number','description'])
+                 ->form([
+                     Forms\Components\TextInput::make('name')
+                         ->label('Target Name')
+                         ->required()
+                         ->maxLength(200),
+                     Forms\Components\TextInput::make('number')
+                         ->label('Target Number')
+                         ->required()
+                         ->minLength(10)
+                         ->maxLength(14),
+                     Forms\Components\TextInput::make('description')
+                         ->label('Description')
+                         ->maxLength(200),
+                 ])
+                 ->beforeReplicaSaved(function (Target $replica, array $data): void {
+                     $replica->fill($data);
+                 }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

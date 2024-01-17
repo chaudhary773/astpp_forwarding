@@ -9,6 +9,7 @@ use App\Models\LiveCall;
 use App\Models\Target;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -64,8 +65,9 @@ class LiveCallResource extends Resource
                         return $record->answered == 1 ? $interval->format('%H:%I:%S') : 0;
                     }),
 
-                Tables\Columns\BadgeColumn::make('answered')
+                Tables\Columns\TextColumn::make('answered')
                     ->label('Call Status')
+                    ->badge()
                     ->sortable()
                     ->getStateUsing(fn (LiveCall $record): string => $record->answered == 1 ? 'Answered' : 'Ringing')
                     ->colors([
@@ -81,9 +83,20 @@ class LiveCallResource extends Resource
                     ->label('')
                     ->icon(static fn () => 'heroicon-m-phone-x-mark')
                     ->color('danger')
-                    ->action(function (LiveCall $record, array $data): void {
-                        $record->hangup($record->call_id);
-                    })
+                    ->action(fn (LiveCall $record, array $data) => $record->hangup())
+                    ->requiresConfirmation()
+                    ->modalIcon('heroicon-m-phone-x-mark')
+                    ->modalIconColor('danger')
+                    ->modalHeading('Terminate Call')
+                    ->modalDescription('Are you sure you\'d like to terminate the call? This cannot be undone.')
+                    ->modalSubmitActionLabel('Yes, terminate it')
+                    ->successNotification(
+                        Notification::make()
+                            ->icon('heroicon-m-phone-x-mark')
+                            ->danger()
+                            ->title('Call Terminated')
+                            ->body('The call has been successfully.'),
+                    )
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -109,5 +122,10 @@ class LiveCallResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    protected function getTablePollingInterval(): ?string
+    {
+        return '10s';
     }
 }
