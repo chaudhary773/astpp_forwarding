@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class DidResource extends Resource
 {
     protected static ?string $model = Did::class;
+    protected static ?string $navigationGroup = 'Campaigns';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getEloquentQuery(): Builder

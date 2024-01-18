@@ -28,7 +28,7 @@ class CustomerPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('customer')
-            ->path('customer')
+           // ->path('customer')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
@@ -44,6 +44,11 @@ class CustomerPanelProvider extends PanelProvider
              //   Widgets\AccountWidget::class,
                 DashboardStats::class,
                 DashboardChart::class
+            ])
+            ->navigationGroups([
+                'Campaigns',
+                'Reports',
+                'Misc.',
             ])
             ->middleware([
                 EncryptCookies::class,

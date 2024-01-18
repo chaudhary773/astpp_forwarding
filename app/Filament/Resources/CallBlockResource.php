@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CallBlockResource extends Resource
 {
     protected static ?string $model = CallBlock::class;
+    protected static ?string $navigationGroup = 'Misc.';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 

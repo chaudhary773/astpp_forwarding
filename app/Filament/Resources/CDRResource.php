@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CDRResource\Pages;
-use App\Filament\Resources\CDRResource\Widgets\CDROverview;
 use App\Models\CDR;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -25,7 +24,7 @@ class CDRResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('customerid', auth()->id());
+        return parent::getEloquentQuery()->where('customerid', auth()->id())->orderBy('call_start', 'desc');
     }
 
 
@@ -65,23 +64,26 @@ class CDRResource extends Resource
                     ->label('Bill Sec')
                  //   ->summarize(Sum::make())
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ringseconds')
-                    ->label('Ring Sec')
+                Tables\Columns\TextColumn::make('missed')
+                    ->label('Status')
+                    ->badge()
+                    ->getStateUsing(fn (CDR $record): string =>  $record->missed == 1 ? 'Missed' : 'Answered' )
+                    ->colors([
+                        'success' => 'Answered',
+                        'danger' => 'Missed',
+                    ])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tta')
                     ->label('Tta')
                     ->numeric()
-                    ->toggleable(isToggledHiddenByDefault: true),
-//                Tables\Columns\TextColumn::make('disposition')
-//                    ->label('Disposition')
-//                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('reason')
                     ->label('Reason')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 Tables\Columns\IconColumn::make('recordingfile')
                     ->label('Download')
                     ->color('info')
-                    ->icon(static fn (CDR $record): string|null => $record->recordingfile !== null ? 'heroicon-m-cloud-arrow-down' : null)
+                    ->icon( fn (CDR $record): string|null => $record->call_answer === null ? null : 'heroicon-m-cloud-arrow-down')
                     ->url(fn (CDR $record) => env('RECORDING_URL') . "/{$record->recordingfile}"),
             ])
             ->filters([
@@ -132,12 +134,7 @@ class CDRResource extends Resource
                     }),
             ])
             ->actions([
-//                Tables\Actions\Action::make('download')
-//                    ->label('Download')
-//                    // ->icon('heroicon-')
-//                    ->action(function (Cdr $record, array $data): void {
-//                            $record->download();
-//                    })
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

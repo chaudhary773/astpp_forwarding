@@ -35,9 +35,7 @@ class TargetRelationManager extends RelationManager
                     ->required()
                     ->hiddenOn('edit')
                     ->minLength(10)
-                    ->maxLength(14),
-//                Forms\Components\TextInput::make('buyer_group_id')
-//                    ->maxLength(200),
+                    ->maxLength(13),
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
                     ->hiddenOn('edit')
@@ -45,26 +43,26 @@ class TargetRelationManager extends RelationManager
                 Forms\Components\TextInput::make('daily_cap')
                     ->label('Daily Cap')
                     ->required()
-                    ->hint('0 = unlimited')
+                    ->hint('-1 = unlimited')
                     ->default(1)
                     ->numeric()
-                    ->minValue(0)
-                    ->maxValue(100),
+                    ->minValue(-1)
+                    ->maxValue(10000),
                 Forms\Components\TextInput::make('monthlycap')
                     ->label('Monthly Cap')
                     ->required()
-                    ->hint('0 = unlimited')
+                    ->hint('-1 = unlimited')
                     ->default(1)
                     ->numeric()
-                    ->minValue(0)
-                    ->maxValue(100),
+                    ->minValue(-1)
+                    ->maxValue(10000),
                 Forms\Components\TextInput::make('concurrent_calls')
                     ->label('Concurrent Calls')
                     ->required()
                     ->default(1)
                     ->numeric()
-                    ->minValue(0)
-                    ->maxValue(100),
+                    ->minValue(1)
+                    ->maxValue(10000),
 
                 Forms\Components\TextInput::make('priority')
                     ->required()

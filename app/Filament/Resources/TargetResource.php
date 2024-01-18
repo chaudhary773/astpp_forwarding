@@ -13,6 +13,8 @@ use App\Models\Target;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ReplicateAction;
@@ -25,6 +27,7 @@ class TargetResource extends Resource
 {
     protected static ?string $model = Target::class;
 
+    protected static ?string $navigationGroup = 'Campaigns';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     /**
@@ -33,7 +36,7 @@ class TargetResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return Target::AllTargets();
+        return Target::AllTargets()->orderBy('active', 'desc')->orderBy('id', 'desc');
     }
 
     public static function table(Table $table): Table
@@ -56,12 +59,14 @@ class TargetResource extends Resource
 
                 Tables\Columns\TextColumn::make('')
                     ->label('TA')
+                    ->badge()
                     ->color('success')
                     ->getStateUsing(fn(Target $record) => self::getTodayAnswered($record))
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('today_missed')
                     ->label('TM')
+                    ->badge()
                     ->color('warning')
                     ->getStateUsing(fn(Target $record) => self::getTodayMissed($record))
                     ->sortable(),
@@ -134,7 +139,7 @@ class TargetResource extends Resource
     private static function getTodayAnswered(Target $record): string
     {
         return DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', 1)
+            ->where('buyerid', $record->id)
             ->where('buyernumber', $record->number)
             ->where('customerid', auth()->id())
             ->whereDate('date', now()->toDateString())
@@ -145,7 +150,7 @@ class TargetResource extends Resource
     private static function getTodayMissed(Target $record): string
     {
         return DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', 1)
+            ->where('buyerid', $record->id)
             ->where('buyernumber', $record->number)
             ->where('customerid', auth()->id())
             ->whereDate('date', now()->toDateString())
@@ -156,31 +161,31 @@ class TargetResource extends Resource
     private static function getDailyCap(Target $record): string
     {
         $dailyCount = DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', 1)
+            ->where('buyerid', $record->id)
             ->where('buyernumber', $record->number)
             ->where('customerid', auth()->id())
             ->whereDate('date', '=', now()->toDateString())
             ->count('buyernumber');
 
-        return $record->daily_cap == 0 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
+        return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
     }
 
     private static function getMonthlyCap(Target $record): string
     {
         $month = now()->format('Y-m');
         $monthlyCount = CDR::where('campid', $record->campaign->id)
-            ->where('buyerid', 1)
+            ->where('buyerid', $record->id)
             ->where('customerid', auth()->id())
             ->where('forwardednumber', $record->number)
             ->where('month', $month)
             ->count('forwardednumber');
-        return $record->monthlycap == 0 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
+        return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
     }
 
     private static function getConcurrentCap(Target $record): string
     {
         $CCcount = LiveCall::where('campid', $record->campaign->id)
-            ->where('buyerid', 1)
+            ->where('buyerid', $record->id)
             ->where('target', $record->number)
             ->where('customerid', auth()->id())
             ->count('target');
@@ -203,8 +208,8 @@ class TargetResource extends Resource
                                     ->label('Target Number')
                                     ->required()
                                     ->numeric()
-                                    ->unique()
-                                    ->maxLength(14),
+                                    ->minLength(10)
+                                    ->maxLength(13),
                                 Forms\Components\Select::make('campaign_id')
                                     ->label('Campaign')
                                     ->relationship('campaign', 'campaign_id')
@@ -217,32 +222,52 @@ class TargetResource extends Resource
                                 Forms\Components\TextInput::make('daily_cap')
                                     ->label('Daily Cap')
                                     ->required()
+                                    ->hint('-1 = unlimited')
+                                    ->default(1)
                                     ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100),
+                                    ->minValue(-1)
+                                    ->maxValue(10000)
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        if ($get('daily_cap') >= 1 ) {
+                                            return;
+                                        }
+                                        $set('daily_cap', -1);
+                                    }),
                                 Forms\Components\TextInput::make('monthlycap')
                                     ->label('Monthly Cap')
                                     ->required()
+                                    ->hint('-1 = unlimited')
+                                    ->default(1)
                                     ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100),
+                                    ->minValue(-1)
+                                    ->maxValue(10000)
+                                    ->afterStateUpdated(function (Get $get, Set $set) {
+                                        if ($get('monthlycap') >= 1 ) {
+                                            return;
+                                        }
+                                        $set('monthlycap', -1);
+                                    }),
                                 Forms\Components\TextInput::make('concurrent_calls')
                                     ->label('Concurrent Calls')
                                     ->required()
                                     ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(100),
+                                    ->default(1)
+                                    ->minValue(1)
+                                    ->maxValue(10000),
 
                                 Forms\Components\TextInput::make('priority')
                                     ->required()
                                     ->numeric()
-                                    ->minValue(0)
+                                    ->default(1)
+                                    ->minValue(1)
                                     ->maxValue(100),
 
                                 Forms\Components\TextInput::make('ringtimeout')
                                     ->label('Ring Timeout')
                                     ->required()
                                     ->numeric()
+                                    ->default(30)
+                                    ->minValue(1)
                                     ->minValue(0)
                                     ->maxValue(100),
 
@@ -250,7 +275,8 @@ class TargetResource extends Resource
                                     ->label('Call Timeout')
                                     ->required()
                                     ->numeric()
-                                    ->minValue(0)
+                                    ->default(30)
+                                    ->minValue(1)
                                     ->maxValue(100),
                                 Forms\Components\Toggle::make('active')
                                     ->label('Active')

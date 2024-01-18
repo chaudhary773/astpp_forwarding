@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CampDidResource extends Resource
 {
     protected static ?string $model = CampDid::class;
-
+    protected static ?string $navigationGroup = 'Campaigns';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
     protected static bool $shouldRegisterNavigation = false;
 

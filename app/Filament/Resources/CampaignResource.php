@@ -20,6 +20,7 @@ use Livewire\Livewire;
 class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
+    protected static ?string $navigationGroup = 'Campaigns';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -90,8 +91,9 @@ class CampaignResource extends Resource
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
 
-                Tables\Columns\BadgeColumn::make('camp_mode')
+                Tables\Columns\TextColumn::make('camp_mode')
                     ->label('Strategy')
+                    ->badge()
                     ->getStateUsing(fn(Campaign $record): string => $record->camp_mode == 1 ? 'Priority' : 'Weight')
                     ->colors([
                         'success' => 'Priority',
