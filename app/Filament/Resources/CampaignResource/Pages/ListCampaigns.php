@@ -16,4 +16,5 @@ class ListCampaigns extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
 }

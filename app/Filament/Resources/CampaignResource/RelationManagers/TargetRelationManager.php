@@ -3,16 +3,15 @@
 namespace App\Filament\Resources\CampaignResource\RelationManagers;
 
 use App\Filament\Resources\TargetResource;
-use App\Models\Campaign;
 use App\Models\Target;
 use Filament\Forms;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 
 class TargetRelationManager extends RelationManager
@@ -20,6 +19,21 @@ class TargetRelationManager extends RelationManager
     protected static string $relationship = 'targets';
 
 
+    public static function getEloquentQuery(): Builder
+    {
+        return Target::AllTargets();
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All target'),
+            'active' => Tab::make('Active')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('active', true)),
+            'paused' => Tab::make('Paused')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('active', false)),
+        ];
+    }
 
     public function form(Form $form): Form
     {
@@ -44,7 +58,7 @@ class TargetRelationManager extends RelationManager
                     ->label('Daily Cap')
                     ->required()
                     ->hint('-1 = unlimited')
-                    ->default(1)
+                    ->default(-1)
                     ->numeric()
                     ->minValue(-1)
                     ->maxValue(10000),
@@ -52,7 +66,7 @@ class TargetRelationManager extends RelationManager
                     ->label('Monthly Cap')
                     ->required()
                     ->hint('-1 = unlimited')
-                    ->default(1)
+                    ->default(-1)
                     ->numeric()
                     ->minValue(-1)
                     ->maxValue(10000),
@@ -104,10 +118,15 @@ class TargetRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-             return TargetResource::table($table)
+        return TargetResource::table($table)
             ->filters([
-                //
-            ])
+                TernaryFilter::make('active')
+                ->label('Active')
+                ->native(false)
+                ->default(true)
+
+            ])->persistFiltersInSession()
+
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])

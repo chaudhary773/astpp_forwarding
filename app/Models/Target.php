@@ -30,7 +30,7 @@ class Target extends Model
 
     public static function scopeAllTargets(Builder $query): void
     {
-        $query->where('customerid', auth()->id());
+        $query->where('customerid', auth()->id())->orderBy('active', 'desc')->orderBy('id', 'desc');
     }
 
 }

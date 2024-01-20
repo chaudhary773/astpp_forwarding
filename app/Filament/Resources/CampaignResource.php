@@ -5,17 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CampaignResource\Pages;
 use App\Filament\Resources\CampaignResource\RelationManagers;
 use App\Models\Campaign;
-use App\Models\CampDid;
 use App\Models\Did;
 use App\Models\Target;
-use Doctrine\DBAL\Query;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Livewire\Livewire;
+
 
 class CampaignResource extends Resource
 {
@@ -31,8 +29,8 @@ class CampaignResource extends Resource
 
     public static function form(Form $form): Form
     {
-        $unassignedDids = Did::allDids()->whereDoesntHave('campaigns')->pluck('number', 'id')->toArray();
 
+        $unassignedDids = Did::allDids()->whereDoesntHave('campaigns')->pluck('number', 'id')->toArray();
         return $form
             ->schema([
                 Forms\Components\Section::make()
@@ -77,7 +75,8 @@ class CampaignResource extends Resource
                                 Forms\Components\Hidden::make('customer_id')
                                     ->default( auth()->id() ),
                             ]),
-                    ]),
+                    ])
+                    ->collapsed(fn (string $operation) => $operation === 'edit'),
             ]);
     }
 

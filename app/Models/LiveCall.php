@@ -20,6 +20,10 @@ class LiveCall extends Model
         'start_time' => 'datetime',
         'answer_time' => 'datetime',
     ];
+    protected array $dates = [
+        'start_time',
+        'answer_time',
+    ];
 
     public function campaign() : BelongsTo
     {

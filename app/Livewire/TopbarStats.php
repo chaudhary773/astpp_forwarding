@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\DailyCdr;
+use App\Models\User;
+use Illuminate\Support\Number;
 use Livewire\Component;
 
 class TopbarStats extends Component
@@ -11,7 +12,7 @@ class TopbarStats extends Component
     {
         return view('livewire.topbar-stats')->with([
             'serverTime' => now()->toDateTime()->format('M d, Y H:i'),
-            'total' => DailyCdr::where('date', now()->format('Y-m-d'))->count(),
+            'balance' =>  Number::currency(User::find(auth()->id())->balance, in: 'USD'),
         ]);
     }
 }

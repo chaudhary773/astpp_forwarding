@@ -7,6 +7,7 @@ use App\Filament\Resources\LiveCallResource\RelationManagers;
 use App\Models\Campaign;
 use App\Models\LiveCall;
 use App\Models\Target;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
@@ -25,7 +26,7 @@ class LiveCallResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('customerid', auth()->id());
+        return parent::getEloquentQuery()->where('customerid', auth()->id())->orderBy('start_time', 'desc');
     }
 
     public static function table(Table $table): Table
@@ -59,8 +60,11 @@ class LiveCallResource extends Resource
                 Tables\Columns\TextColumn::make('')
                     ->label('Duration')
                     ->getStateUsing(function (LiveCall $record) {
-                        $startDate = new \DateTime($record['start_time']);
-                        $endDate = new \DateTime($record['answer_time']);
+                        $startDate = new \DateTime($record['answer_time']);
+                        $endDate = new \DateTime(now());
+//                        $to = Carbon::createFromFormat('Y-m-d H:i:s', $record['answer_time']);
+//                        $from = Carbon::createFromFormat('Y-m-d H:i:s', now());
+                      // dd($to, $from);
                         $interval = $startDate->diff($endDate);
                         return $record->answered == 1 ? $interval->format('%H:%I:%S') : 0;
                     }),
@@ -74,7 +78,9 @@ class LiveCallResource extends Resource
                         'success' => 'Answered',
                         'warning' => 'Ringing',
                     ]),
+
             ])
+            ->poll('10s')
             ->filters([
                 //
             ])
@@ -99,9 +105,7 @@ class LiveCallResource extends Resource
                     )
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+
             ]);
     }
 
@@ -119,10 +123,10 @@ class LiveCallResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+   /* public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
-    }
+        return static::getModel()::where('customerid', auth()->id())->count();
+    }*/
 
     protected function getTablePollingInterval(): ?string
     {

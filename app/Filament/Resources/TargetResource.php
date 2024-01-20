@@ -36,7 +36,7 @@ class TargetResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return Target::AllTargets()->orderBy('active', 'desc')->orderBy('id', 'desc');
+        return Target::AllTargets();
     }
 
     public static function table(Table $table): Table
@@ -97,7 +97,8 @@ class TargetResource extends Resource
                     ->label('Call Timeout')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\ToggleColumn::make('active')
-                    ->label('Status'),
+                    ->label('Status')
+                ->sortable(),
                 Tables\Columns\TextColumn::make('creationdate')
                     ->date('M d, Y')
                     ->sortable()
@@ -223,7 +224,7 @@ class TargetResource extends Resource
                                     ->label('Daily Cap')
                                     ->required()
                                     ->hint('-1 = unlimited')
-                                    ->default(1)
+                                    ->default(-1)
                                     ->numeric()
                                     ->minValue(-1)
                                     ->maxValue(10000)
@@ -237,7 +238,7 @@ class TargetResource extends Resource
                                     ->label('Monthly Cap')
                                     ->required()
                                     ->hint('-1 = unlimited')
-                                    ->default(1)
+                                    ->default(-1)
                                     ->numeric()
                                     ->minValue(-1)
                                     ->maxValue(10000)

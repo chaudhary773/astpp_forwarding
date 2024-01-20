@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\CDRExporter;
 use App\Filament\Resources\CDRResource\Pages;
 use App\Models\CDR;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\Summarizers\Average;
-use Filament\Tables\Columns\Summarizers\Sum;
+use Filament\Tables\Actions\ExportBulkAction as DefaultExportBulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
@@ -64,6 +64,8 @@ class CDRResource extends Resource
                     ->label('Bill Sec')
                  //   ->summarize(Sum::make())
                     ->sortable(),
+                Tables\Columns\TextColumn::make('ringseconds')
+                    ->label('Ring Sec'),
                 Tables\Columns\TextColumn::make('missed')
                     ->label('Status')
                     ->badge()
@@ -86,6 +88,7 @@ class CDRResource extends Resource
                     ->icon( fn (CDR $record): string|null => $record->call_answer === null ? null : 'heroicon-m-cloud-arrow-down')
                     ->url(fn (CDR $record) => env('RECORDING_URL') . "/{$record->recordingfile}"),
             ])
+
             ->filters([
                 Tables\Filters\SelectFilter::make('buyerid')
                     ->label('Buyer')
@@ -103,7 +106,7 @@ class CDRResource extends Resource
                     ->preload()
                     ->multiple()
                     ->searchable(),
-                Tables\Filters\Filter::make('created_at')
+                Tables\Filters\Filter::make('call_start')
                     ->form([
                         Forms\Components\DatePicker::make('call_from')
                             ->placeholder(fn ($state): string => 'Dec 18, ' . now()->subYear()->format('Y')),
@@ -118,16 +121,16 @@ class CDRResource extends Resource
                             )
                             ->when(
                                 $data['call_until'] ?? null,
-                                fn (Builder $query, $date): Builder => $query->whereDate('call_end', '<=', $date),
+                                fn (Builder $query, $date): Builder => $query->whereDate('call_start', '<=', $date),
                             );
                     })
                     ->indicateUsing(function (array $data): array {
                         $indicators = [];
                         if ($data['call_from'] ?? null) {
-                            $indicators['call_from'] = 'Call from ' . Carbon::parse($data['created_from'])->toFormattedDateString();
+                            $indicators['call_from'] = 'Call from ' . Carbon::parse($data['call_from'])->toFormattedDateString();
                         }
                         if ($data['call_until'] ?? null) {
-                            $indicators['call_until'] = 'Call until ' . Carbon::parse($data['created_until'])->toFormattedDateString();
+                            $indicators['call_until'] = 'Call until ' . Carbon::parse($data['call_until'])->toFormattedDateString();
                         }
 
                         return $indicators;
@@ -138,8 +141,10 @@ class CDRResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    ExportBulkAction::make()
+                    ExportBulkAction::make(),
+                    DefaultExportBulkAction::make()
+                        ->exporter(CDRExporter::class)
+
                 ]),
             ]);
     }
@@ -163,10 +168,10 @@ class CDRResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+  /*  public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
-    }
+        return static::getModel()::where('customerid', auth()->id())->count();
+    }*/
 
 //    public static function getWidgets(): array
 //    {
