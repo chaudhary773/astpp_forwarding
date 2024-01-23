@@ -137,7 +137,7 @@ class TargetResource extends Resource
             ]);
     }
 
-    private static function getTodayAnswered(Target $record): string
+    private static function getTodayAnswered(Target $record): ?string
     {
         return DailyCdr::where('campid', $record->campaign->id)
             ->where('buyerid', $record->id)
@@ -148,7 +148,7 @@ class TargetResource extends Resource
             ->count('buyernumber');
     }
 
-    private static function getTodayMissed(Target $record): string
+    private static function getTodayMissed(Target $record): ?string
     {
         return DailyCdr::where('campid', $record->campaign->id)
             ->where('buyerid', $record->id)
@@ -159,7 +159,7 @@ class TargetResource extends Resource
             ->count('buyernumber');
     }
 
-    private static function getDailyCap(Target $record): string
+    private static function getDailyCap(Target $record): ?string
     {
         $dailyCount = DailyCdr::where('campid', $record->campaign->id)
             ->where('buyerid', $record->id)
@@ -171,7 +171,7 @@ class TargetResource extends Resource
         return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
     }
 
-    private static function getMonthlyCap(Target $record): string
+    private static function getMonthlyCap(Target $record): ?string
     {
         $month = now()->format('Y-m');
         $monthlyCount = CDR::where('campid', $record->campaign->id)
@@ -183,7 +183,7 @@ class TargetResource extends Resource
         return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
     }
 
-    private static function getConcurrentCap(Target $record): string
+    private static function getConcurrentCap(Target $record): ?string
     {
         $CCcount = LiveCall::where('campid', $record->campaign->id)
             ->where('buyerid', $record->id)

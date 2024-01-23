@@ -45,6 +45,11 @@ class User extends Authenticatable implements HasName
         'password' => 'hashed',
     ];
 
+    public function getUserName(Authenticatable $user): string
+    {
+        return $user->first_name ?? 'Anonymous';
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         //return str_ends_with($this->email, '@admin.com') && $this->hasVerifiedEmail();

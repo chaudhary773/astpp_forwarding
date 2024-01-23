@@ -47,5 +47,10 @@ class Campaign extends Model
         return $this->hasMany(Target::class);
     }
 
+    public function liveCalls(): HasMany
+    {
+        return $this->hasMany(LiveCall::class, 'campid', 'id');
+    }
+
 
 }

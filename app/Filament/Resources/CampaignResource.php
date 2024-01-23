@@ -100,6 +100,12 @@ class CampaignResource extends Resource
                 //    Tables\Columns\BooleanColumn::make('threading'),
                 Tables\Columns\TextColumn::make('call_timeout'),
                 Tables\Columns\TextColumn::make('ring_timeout'),
+                Tables\Columns\TextColumn::make('live calls')
+                    ->label('Live calls')
+                    ->getStateUsing(fn (Campaign $record) => $record->liveCalls->count('campid')),
+                Tables\Columns\TextColumn::make('targets.concurrent_calls')
+                    ->getStateUsing(fn (Campaign $record) => $record->targets->where('active', 1)->sum('concurrent_calls'))
+                    ->label('CC'),
                 Tables\Columns\ToggleColumn::make('active'),
                 //   Tables\Columns\TextColumn::make('targets_exists')->exists('targets', 'id'),
                 Tables\Columns\TextColumn::make('create_date')
