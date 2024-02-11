@@ -139,58 +139,63 @@ class TargetResource extends Resource
 
     private static function getTodayAnswered(Target $record): ?string
     {
-        return DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', $record->id)
-            ->where('buyernumber', $record->number)
-            ->where('customerid', auth()->id())
-            ->whereDate('date', now()->toDateString())
-            ->where('missed', 0)
-            ->count('buyernumber');
+
+            return DailyCdr::where('campid', $record->campaign?->id)
+                ->where('buyerid', $record->id)
+                ->where('buyernumber', $record->number)
+                ->where('customerid', auth()->id())
+                ->whereDate('date', now()->toDateString())
+                ->where('missed', 0)
+                ->count('buyernumber');
     }
 
     private static function getTodayMissed(Target $record): ?string
     {
-        return DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', $record->id)
-            ->where('buyernumber', $record->number)
-            ->where('customerid', auth()->id())
-            ->whereDate('date', now()->toDateString())
-            ->where('missed', 1)
-            ->count('buyernumber');
+
+            return DailyCdr::where('campid', $record->campaign?->id)
+                ->where('buyerid', $record->id)
+                ->where('buyernumber', $record->number)
+                ->where('customerid', auth()->id())
+                ->whereDate('date', now()->toDateString())
+                ->where('missed', 1)
+                ->count('buyernumber');
     }
 
     private static function getDailyCap(Target $record): ?string
     {
-        $dailyCount = DailyCdr::where('campid', $record->campaign->id)
-            ->where('buyerid', $record->id)
-            ->where('buyernumber', $record->number)
-            ->where('customerid', auth()->id())
-            ->whereDate('date', '=', now()->toDateString())
-            ->count('buyernumber');
 
-        return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
+            $dailyCount = DailyCdr::where('campid', $record->campaign?->id)
+                ->where('buyerid', $record->id)
+                ->where('buyernumber', $record->number)
+                ->where('customerid', auth()->id())
+                ->whereDate('date', '=', now()->toDateString())
+                ->count('buyernumber');
+
+            return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
+
     }
 
     private static function getMonthlyCap(Target $record): ?string
     {
-        $month = now()->format('Y-m');
-        $monthlyCount = CDR::where('campid', $record->campaign->id)
-            ->where('buyerid', $record->id)
-            ->where('customerid', auth()->id())
-            ->where('forwardednumber', $record->number)
-            ->where('month', $month)
-            ->count('forwardednumber');
-        return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
+
+            $month = now()->format('Y-m');
+            $monthlyCount = CDR::where('campid', $record->campaign?->id)
+                ->where('buyerid', $record->id)
+                ->where('customerid', auth()->id())
+                ->where('forwardednumber', $record->number)
+                ->where('month', $month)
+                ->count('forwardednumber');
+            return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
     }
 
     private static function getConcurrentCap(Target $record): ?string
     {
-        $CCcount = LiveCall::where('campid', $record->campaign->id)
-            ->where('buyerid', $record->id)
-            ->where('target', $record->number)
-            ->where('customerid', auth()->id())
-            ->count('target');
-        return $record->concurrent_calls == 0 ? $CCcount . '/UL' : $CCcount . '/' . $record->concurrent_calls;
+            $CCcount = LiveCall::where('campid', $record->campaign?->id)
+                ->where('buyerid', $record->id)
+                ->where('target', $record->number)
+                ->where('customerid', auth()->id())
+                ->count('target');
+            return $record->concurrent_calls == 0 ? $CCcount . '/UL' : $CCcount . '/' . $record->concurrent_calls;
     }
 
     public static function form(Form $form): Form

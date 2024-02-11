@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Egulias\EmailValidator\Result\Reason\CRLFAtTheEnd;
+
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,7 +12,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable implements HasName
+class User extends Authenticatable implements HasName, FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -43,17 +43,22 @@ class User extends Authenticatable implements HasName
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'status' => 'boolean',
+        'is_recording' => 'boolean',
     ];
 
-    public function getUserName(Authenticatable $user): string
-    {
-        return $user->first_name ?? 'Anonymous';
-    }
 
     public function canAccessPanel(Panel $panel): bool
     {
-        //return str_ends_with($this->email, '@admin.com') && $this->hasVerifiedEmail();
-        return true;
+        if ($panel->getId() === 'admin') {
+            return str_ends_with($this->number, 'admin') && $this->type == -1;
+        }
+        return $this->isActive();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->getAttributeValue('status') == 0;
     }
 
     public function getFilamentName(): string

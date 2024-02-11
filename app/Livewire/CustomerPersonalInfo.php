@@ -3,6 +3,7 @@ namespace App\Livewire;
 
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Jeffgreco13\FilamentBreezy\Livewire\PersonalInfo;
 
@@ -11,7 +12,7 @@ use Jeffgreco13\FilamentBreezy\Livewire\PersonalInfo;
 
 class CustomerPersonalInfo extends PersonalInfo
 {
-    public array $only = ['first_name', 'last_name', 'address_1', 'city', 'postal_code', 'email', 'balance', 'telephone_1'];
+    public array $only = ['number','first_name', 'last_name', 'address_1', 'city', 'postal_code', 'email', 'balance', 'telephone_1'];
     public function mount()
     {
         $this->user = Filament::getCurrentPanel()->auth()->user();
@@ -30,6 +31,8 @@ class CustomerPersonalInfo extends PersonalInfo
     protected function getProfileFormSchema()
     {
         $groupFields = Forms\Components\Group::make([
+            Forms\Components\TextInput::make('number')
+                ->label(__('User ID'))->readOnly(),
             $this->getNameComponent(),
             Forms\Components\TextInput::make('last_name')
                 ->label(__('Last Name')),
@@ -66,6 +69,8 @@ class CustomerPersonalInfo extends PersonalInfo
     protected function getEmailComponent(): Forms\Components\TextInput
     {
         return Forms\Components\TextInput::make('email')
+            ->email()
+            ->unique()
             ->required();
     }
 

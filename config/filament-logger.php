@@ -1,4 +1,11 @@
 <?php
+
+use App\Models\CallBlock;
+use App\Models\Campaign;
+use App\Models\Did;
+use App\Models\Target;
+use App\Models\User;
+
 return [
     'datetime_format' => 'd/m/Y H:i:s',
     'date_format' => 'd/m/Y',
@@ -35,7 +42,11 @@ return [
         'color' => 'warning',
         'logger' => \Z3d0X\FilamentLogger\Loggers\ModelLogger::class,
         'register' => [
-            \App\Models\User::class,
+            User::class,
+            Campaign::class,
+            Target::class,
+            Did::class,
+            CallBlock::class
         ],
     ],
 

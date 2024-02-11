@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\Login;
-use App\Filament\Resources\LiveCallResource\Widgets\StatsOverview;
 use App\Filament\Widgets\DashboardChart;
 use App\Filament\Widgets\DashboardStats;
 use App\Livewire\CustomerPersonalInfo;
@@ -15,7 +14,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -55,9 +53,6 @@ class CustomerPanelProvider extends PanelProvider
                     ])
 
             )
-            ->resources([
-                config('filament-logger.activity_resource')
-            ])
             ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
@@ -75,6 +70,8 @@ class CustomerPanelProvider extends PanelProvider
                 'Reports',
                 'Misc.',
             ])
+            ->globalSearch(false)
+
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
