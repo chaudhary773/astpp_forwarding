@@ -27,8 +27,6 @@ class CDRResource extends Resource
         return parent::getEloquentQuery()->where('customerid', auth()->id())->orderBy('call_start', 'desc');
     }
 
-
-
     public static function table(Table $table): Table
     {
         return $table
@@ -73,6 +71,10 @@ class CDRResource extends Resource
                     ->colors([
                         'success' => 'Answered',
                         'danger' => 'Missed',
+                    ])
+                    ->icons([
+                        'heroicon-s-phone' => 'Answered',
+                        'heroicon-s-phone-x-mark' => 'Missed',
                     ])
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tta')

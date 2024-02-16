@@ -21,6 +21,12 @@ class Did extends Model
     const CREATED_AT = 'assign_date';
     const UPDATED_AT = 'last_modified_date';
 
+    protected $casts = [
+        'assign_date' => 'datetime',
+        'last_modified_date' => 'datetime',
+        'status' => 'boolean',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->BelongsTo(User::class, 'accountid', 'id');

@@ -30,10 +30,6 @@ class TargetResource extends Resource
     protected static ?string $navigationGroup = 'Campaigns';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    /**
-     * @param string|null $breadcrumb
-     */
-
     public static function getEloquentQuery(): Builder
     {
         return Target::AllTargets();
@@ -42,14 +38,7 @@ class TargetResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-//            ->defaultGroup(
-//                Tables\Grouping\Group::make('campaign.camp_name')
-//                    ->collapsible()
-//                    ->titlePrefixedWithLabel(false)
-//            )
             ->columns([
-//                Tables\Columns\TextColumn::make('name')
-//                    ->searchable(),
                 Tables\Columns\TextColumn::make('number')
                     ->description(fn(Target $record): string => $record->name ?? '')
                     ->searchable(),

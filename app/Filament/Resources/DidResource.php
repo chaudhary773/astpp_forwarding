@@ -11,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -23,11 +24,9 @@ class DidResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-
-        return parent::getEloquentQuery()->with('campaigns')->where('accountid', auth()->id())->where('call_type', '=', 6);
+        return parent::getEloquentQuery()->with('campaigns')->where('accountid', auth()->id())->where('call_type',
+            '=', 6);
     }
-
-
 
     public static function table(Table $table): Table
     {
@@ -35,20 +34,29 @@ class DidResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->searchable(),
-                Tables\Columns\BadgeColumn::make('status')
-                    ->label('Strategy')
-                    ->getStateUsing(fn (Did $record): string => $record->status == 0 ? 'Active' : 'Inactive')
+                    ->searchable(isIndividual: true),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->getStateUsing(fn (Did $record): string => $record->status == 0 ? 'Enabled' : 'Disabled')
                     ->colors([
-                        'success' => 'Active',
-                        'danger' => 'Inactive',
-                        ]),
+                        'success' => 'Enabled',
+                        'danger' => 'Disabled',
+                        ])
+                    ->icons([
+                         'heroicon-c-check-circle' => 'Enabled',
+                         'heroicon-c-x-circle' => 'Disabled',
+                    ])
+                ->action(function (Did $record): void {
+                        $record->status = $record->status ? 0 : 1;
+                        $record->save();
+                    }),
+
                 Tables\Columns\TextColumn::make('campaign_id')
                     ->label('Campaign')
                     ->getStateUsing(function (Did $record) {
                          return $record->campaigns->isNotEmpty() ? $record->campaigns->last()->camp_name : '';
-                    })
-                    ->searchable(),
+                    }),
                 Tables\Columns\TextColumn::make('assign_date')
                     ->dateTime()
                     ->sortable()
@@ -61,17 +69,7 @@ class DidResource extends Resource
                 //
             ])
             ->actions([
-               // Tables\Actions\EditAction::make(),
-
-                Tables\Actions\Action::make('status')
-                    ->label('Toggle')
-                   // ->icon('heroicon-')
-                    ->action(function (Did $record, array $data): void {
-                        $record->status = $record->status ? 0 : 1;
-                        $record->save();
-                    }),
-
-                Tables\Actions\Action::make('attach')
+                  Tables\Actions\Action::make('attach')
                     ->label('Assign')
                     ->icon('heroicon-o-plus')
                     ->color('success')

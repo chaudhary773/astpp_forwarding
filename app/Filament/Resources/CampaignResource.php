@@ -14,7 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-
+ 
 class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
@@ -72,6 +72,9 @@ class CampaignResource extends Resource
                                     ->label('Call Threading'),
                                 Forms\Components\Toggle::make('active')
                                     ->default(true),
+                                Forms\Components\Toggle::make('ivrauth')
+                                    ->label('IVR Auth')
+                                    ->default(true),
                                 Forms\Components\Hidden::make('customer_id')
                                     ->default( auth()->id() ),
                             ]),
@@ -107,6 +110,8 @@ class CampaignResource extends Resource
                     ->getStateUsing(fn (Campaign $record) => $record->targets->where('active', 1)->sum('concurrent_calls'))
                     ->label('CC'),
                 Tables\Columns\ToggleColumn::make('active'),
+                Tables\Columns\ToggleColumn::make('ivrauth')
+                ->label('IVR'),
                 //   Tables\Columns\TextColumn::make('targets_exists')->exists('targets', 'id'),
                 Tables\Columns\TextColumn::make('create_date')
                     ->dateTime()
