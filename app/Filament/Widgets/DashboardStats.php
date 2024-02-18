@@ -43,7 +43,6 @@ class DashboardStats extends BaseWidget
             ->where('missed', 1)
             ->count('forwardednumber');
 
-
         return [
             Stat::make('Total Campaigns', $totalCampaigns->count()),
             Stat::make('Total DIDs', $totalDids->count()),

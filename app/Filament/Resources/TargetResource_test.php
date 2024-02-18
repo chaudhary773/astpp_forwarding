@@ -5,7 +5,6 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TargetResource\Pages;
 use App\Models\Campaign;
 use App\Models\CDR;
-use App\Models\DailyCdr;
 use App\Models\LiveCall;
 use App\Models\Target;
 use Filament\Forms;
@@ -18,7 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 
-class TargetResource extends Resource
+class TargetResource_test extends Resource
 {
     protected static ?string $model = Target::class;
 
@@ -44,17 +43,23 @@ class TargetResource extends Resource
                     ->label('TA')
                     ->badge()
                     ->color('success')
-                    ->getStateUsing(fn(Target $record) => self::getTodayAnswered($record)),
+                    ->getStateUsing(fn(Target $record) => $record->dailyCdrs
+                        ->where('date', now()->toDateString())
+                        ->where('missed', 0)
+                        ->count('buyernumber')),
 
                 Tables\Columns\TextColumn::make('today_missed')
                     ->label('TM')
                     ->badge()
                     ->color('warning')
-                    ->getStateUsing(fn(Target $record) => self::getTodayMissed($record)),
+                    ->getStateUsing(fn(Target $record) => $record->dailyCdrs
+                        ->where('date', now()->toDateString())
+                        ->where('missed', 1)
+                        ->count('buyernumber')),
 
                 Tables\Columns\TextColumn::make('daily_cap')
                     ->label('DC')
-                    ->formatStateUsing(fn(Target $record) => self::getDailyCap($record))
+                    ->formatStateUsing(fn(Target $record) => self::formatDailyCap($record))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('monthlycap')
                     ->label("MC")
@@ -118,78 +123,34 @@ class TargetResource extends Resource
             ]);
     }
 
-    // private static function getTodayAnswered(Target $record): ?string
-    // {
-
-    //     return DailyCdr::where('campid', $record->campaign?->id)
-    //         ->where('buyerid', $record->id)
-    //       //  ->where('buyernumber', $record->number)
-    //         ->where('customerid', auth()->id())
-    //         ->whereDate('date', now()->toDateString())
-    //         ->where('missed', 0)
-    //         ->count('buyernumber');
-    // }
-
-
-     private static function getTodayAnswered(Target $record): ?string
-     {
-         $cacheKey = 'target_today_answered'. $record->id;
-         return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($record) {
-             return $record->dailyCdrs
-                 ->where('date', now()->toDateString())
-                 ->where('missed', 0)
-                 ->count('buyernumber');
-         });
-    }
-
-    private static function getTodayMissed(Target $record): ?string
+    private static function formatDailyCap(Target $record): string
     {
-        $cacheKey = 'target_today_missed'. $record->id;
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($record) {
-            return $record->dailyCdrs
-                ->where('date', now()->toDateString())
-                ->where('missed', 1)
-                ->count('buyernumber');
-        });
-    }
-
-    private static function getDailyCap(Target $record): ?string
-    {
-        $cacheKey = 'target_daily_cap'. $record->id;
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($record) {
-            $dailyCount = DailyCdr::where('campid', $record->campaign?->id)
-                ->where('buyerid', $record->id)
-                ->where('customerid', auth()->id())
-                ->where('date', '=', now()->toDateString())
-                ->count('buyernumber');
-            return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
-        });
+        $dailyCount = $record->dailyCdrs()->whereDate('date', now()->toDateString())->count('buyernumber');
+        return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
     }
 
     private static function getMonthlyCap(Target $record): ?string
     {
         $month = now()->format('Y-m');
-        $cacheKey = 'target_monthly_cap_'. $record->id . '_' . $month;
+        $cacheKey = 'target_monthly_cap_' . $record->campaign_id . '_' . $record->id . '_' . $month;
+
         return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($record, $month) {
-            $monthlyCount = (CDR::where('campid', $record->campaign?->id)
+            $monthlyCount = CDR::where('campid', $record->campaign?->id)
                 ->where('buyerid', $record->id)
                 ->where('customerid', auth()->id())
                 ->where('month', $month)
-                ->count('forwardednumber'));
+                ->count('forwardednumber');
             return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
         });
     }
 
     private static function getConcurrentCap(Target $record): ?string
     {
-        $cacheKey = 'cc_cap'. $record->id;
-        return Cache::remember($cacheKey, now()->addMinutes(10), function () use ($record) {
-            $CCcount = LiveCall::where('campid', $record->campaign?->id)
-                ->where('buyerid', $record->id)
-                ->where('customerid', auth()->id())
-                ->count('target');
-            return $record->concurrent_calls == 0 ? $CCcount . '/UL' : $CCcount . '/' . $record->concurrent_calls;
-        });
+        $CCcount = LiveCall::where('campid', $record->campaign?->id)
+            ->where('buyerid', $record->id)
+            ->where('customerid', auth()->id())
+            ->count('target');
+        return $record->concurrent_calls == 0 ? $CCcount . '/UL' : $CCcount . '/' . $record->concurrent_calls;
     }
 
     public static function form(Form $form): Form
@@ -290,6 +251,7 @@ class TargetResource extends Resource
             ]);
     }
 
+
     public static function getPages(): array
     {
         return [
@@ -299,9 +261,9 @@ class TargetResource extends Resource
         ];
     }
 
-//    public static function getNavigationBadge(): ?string
-//    {
-//        return static::getModel()::allTargets()->count();
-//    }
+//     public static function getNavigationBadge(): ?string
+//     {
+//         return static::getModel()::allTargets()->count();
+//     }
 
 }

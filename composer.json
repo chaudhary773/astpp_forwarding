@@ -9,12 +9,14 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-debugbar": "^3.10",
         "filament/filament": "*",
         "flowframe/laravel-trend": "^0.1.5",
         "guzzlehttp/guzzle": "^7.2",
         "jeffgreco13/filament-breezy": "v2.2.1.1",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",
+        "laravel/telescope": "^4.17",
         "laravel/tinker": "^2.8",
         "pxlrbt/filament-excel": "^2.2",
         "z3d0x/filament-logger": "^0.6.3"

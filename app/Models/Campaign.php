@@ -52,5 +52,9 @@ class Campaign extends Model
         return $this->hasMany(LiveCall::class, 'campid', 'id');
     }
 
+    public function liveCallsCount():int
+    {
+        return $this->hasMany(LiveCall::class, 'campid', 'id')->count();
+    }
 
 }

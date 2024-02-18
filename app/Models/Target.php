@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Target extends Model
 {
@@ -27,6 +28,11 @@ class Target extends Model
     {
         return $this->belongsTo(Campaign::class);
     }
+    public function dailyCdrs(): HasMany
+    {
+        return $this->hasMany(DailyCdr::class, 'buyerid', 'id');
+    }
+
 
     public static function scopeAllTargets(Builder $query): void
     {

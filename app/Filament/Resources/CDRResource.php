@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Filament\Resources;
-
 use App\Filament\Exports\CDRExporter;
 use App\Filament\Resources\CDRResource\Pages;
 use App\Models\CDR;
@@ -51,7 +49,6 @@ class CDRResource extends Resource
                     ->label('Call End')
                     ->dateTime()
                     ->sortable(),
-
                 Tables\Columns\TextColumn::make('campname')
                     ->label('Campaign')
                     ->searchable(isIndividual: true),
@@ -60,7 +57,6 @@ class CDRResource extends Resource
                     ->searchable(isIndividual: true),
                 Tables\Columns\TextColumn::make('billseconds')
                     ->label('Bill Sec')
-                 //   ->summarize(Sum::make())
                     ->sortable(),
                 Tables\Columns\TextColumn::make('ringseconds')
                     ->label('Ring Sec'),
@@ -134,7 +130,6 @@ class CDRResource extends Resource
                         if ($data['call_until'] ?? null) {
                             $indicators['call_until'] = 'Call until ' . Carbon::parse($data['call_until'])->toFormattedDateString();
                         }
-
                         return $indicators;
                     }),
             ])
@@ -146,17 +141,10 @@ class CDRResource extends Resource
                     ExportBulkAction::make(),
                     DefaultExportBulkAction::make()
                         ->exporter(CDRExporter::class)
-
                 ]),
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
 
     public static function getGloballySearchableAttributes(): array
     {
@@ -170,15 +158,4 @@ class CDRResource extends Resource
         ];
     }
 
-  /*  public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::where('customerid', auth()->id())->count();
-    }*/
-
-//    public static function getWidgets(): array
-//    {
-//        return [
-//            CDROverview::class,
-//        ];
-//    }
 }

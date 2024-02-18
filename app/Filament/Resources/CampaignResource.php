@@ -14,7 +14,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
- 
+
 class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
@@ -24,7 +24,7 @@ class CampaignResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('customer_id', auth()->id());
+        return static::getModel()::query()->with('liveCalls')->where('customer_id', auth()->id());
     }
 
     public static function form(Form $form): Form
@@ -92,7 +92,6 @@ class CampaignResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->searchable(),
-
                 Tables\Columns\TextColumn::make('camp_mode')
                     ->label('Strategy')
                     ->badge()
@@ -103,16 +102,17 @@ class CampaignResource extends Resource
                 //    Tables\Columns\BooleanColumn::make('threading'),
                 Tables\Columns\TextColumn::make('call_timeout'),
                 Tables\Columns\TextColumn::make('ring_timeout'),
-                Tables\Columns\TextColumn::make('live calls')
+                Tables\Columns\TextColumn::make('')
+                  //  ->counts('camped')
                     ->label('Live calls')
-                    ->getStateUsing(fn (Campaign $record) => $record->liveCalls->count('campid')),
+                    ->getStateUsing(fn (Campaign $record) => $record->liveCalls->count()),
                 Tables\Columns\TextColumn::make('targets.concurrent_calls')
                     ->getStateUsing(fn (Campaign $record) => $record->targets->where('active', 1)->sum('concurrent_calls'))
                     ->label('CC'),
+
                 Tables\Columns\ToggleColumn::make('active'),
                 Tables\Columns\ToggleColumn::make('ivrauth')
                 ->label('IVR'),
-                //   Tables\Columns\TextColumn::make('targets_exists')->exists('targets', 'id'),
                 Tables\Columns\TextColumn::make('create_date')
                     ->dateTime()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -232,13 +232,14 @@ class CampaignResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::where('customer_id', auth()->id())->count();
-    }
+//    public static function getNavigationBadge(): ?string
+//    {
+//        return self::getEloquentQuery()->count();
+//    }
 
-    public function getTargetCounts($record): Builder
-    {
-        return Target::where('campaign_id', $record->id)->get();
-    }
+//
+//    public function getTargetCounts($record): Builder
+//    {
+//        return Target::where('campaign_id', $record->id)->get();
+//    }
 }

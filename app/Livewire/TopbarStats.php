@@ -12,7 +12,7 @@ class TopbarStats extends Component
     {
         return view('livewire.topbar-stats')->with([
             'serverTime' => now()->toDateTime()->format('M d, Y H:i'),
-            'balance' =>  Number::currency(User::find(auth()->id())->balance, in: 'USD'),
+            'balance' =>  Number::currency(auth()->user()->balance, in: 'USD'),
         ]);
     }
 }

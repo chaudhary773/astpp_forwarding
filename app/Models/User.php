@@ -19,6 +19,7 @@ class User extends Authenticatable implements HasName, FilamentUser
     protected $table = 'accounts';
     protected $primaryKey = 'id';
     public $timestamps = false;
+    public string|User $user = User::class;
     /**
      * The attributes that are mass assignable.
      *
@@ -60,6 +61,7 @@ class User extends Authenticatable implements HasName, FilamentUser
     {
         return $this->getAttributeValue('status') == 0;
     }
+
 
     public function getFilamentName(): string
     {

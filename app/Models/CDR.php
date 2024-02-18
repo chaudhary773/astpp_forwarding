@@ -22,7 +22,6 @@ class CDR extends Model
         'missed' => 'boolean',
     ];
 
-
     public function campaign() : BelongsTo
     {
         return $this->belongsTo(Campaign::class, 'campid', 'id');

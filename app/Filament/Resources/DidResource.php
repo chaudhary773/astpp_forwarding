@@ -34,7 +34,7 @@ class DidResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->searchable(isIndividual: true),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->badge()
@@ -116,8 +116,8 @@ class DidResource extends Resource
         ];
     }
 
-    public static function getNavigationBadge(): ?string
+  /*  public static function getNavigationBadge(): ?string
     {
         return static::getModel()::allDids()->count();
-    }
+    }*/
 }
