@@ -31,4 +31,8 @@ class ListTargets extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('active', false)),
         ];
     }
+    public function getDefaultActiveTab(): string | int | null
+    {
+        return 'active';
+    }
 }

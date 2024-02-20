@@ -25,15 +25,6 @@ class CallBlockResource extends Resource
         return parent::getEloquentQuery()->where('customer_id', auth()->id());
     }
 
-    public function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['customer_id'] = auth()->id();
-        return $data;
-    }
-
-   
-
-
     public static function form(Form $form): Form
     {
         return $form
@@ -41,7 +32,7 @@ class CallBlockResource extends Resource
                 Forms\Components\TextInput::make('number')
                     ->label('Number')
                     ->required()
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->tel(),
                 Forms\Components\TextInput::make('description')
                     ->label('Description')
@@ -51,8 +42,6 @@ class CallBlockResource extends Resource
                     ->label('Status')
                     ->default(1)
                     ->required(),
-                Forms\Components\Hidden::make('customer_id')
-                ->default(auth()->id()),
             ]);
     }
 

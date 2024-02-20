@@ -139,8 +139,8 @@ class CDRResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     ExportBulkAction::make(),
-                    DefaultExportBulkAction::make()
-                        ->exporter(CDRExporter::class)
+//                    DefaultExportBulkAction::make()
+//                        ->exporter(CDRExporter::class)
                 ]),
             ]);
     }

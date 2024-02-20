@@ -17,7 +17,6 @@ class Target extends Model
     protected $guarded = [];
     public $timestamps = false;
 
-
     protected $casts = [
         'creationdate' => 'datetime',
         'modifieddate' => 'datetime',
@@ -30,7 +29,18 @@ class Target extends Model
     }
     public function dailyCdrs(): HasMany
     {
-        return $this->hasMany(DailyCdr::class, 'buyerid', 'id');
+        return $this->hasMany(DailyCdr::class, 'buyerid', 'id')->where('date', now()->toDateString());
+    }
+
+    public function campCdrs(): HasMany
+    {
+        $month = now()->format('Y-m');
+        return $this->hasMany(CDR::class, 'buyerid', 'id')->where('month', $month) ;
+    }
+
+    public function liveCdrs(): HasMany
+    {
+        return $this->hasMany(LiveCall::class, 'buyerid', 'id');
     }
 
 

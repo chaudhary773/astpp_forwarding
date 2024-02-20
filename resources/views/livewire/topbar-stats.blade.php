@@ -1,3 +1,3 @@
-<div wire:poll.60s>
+<div wire:poll.6000s>
     <span>{{ $serverTime }}</span>  | Credit:  <span>{{ $balance }}</span>
 </div>

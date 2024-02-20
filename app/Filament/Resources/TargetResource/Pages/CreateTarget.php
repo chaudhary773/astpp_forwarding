@@ -27,4 +27,5 @@ class CreateTarget extends CreateRecord
         $data['callcontrol'] = '1';
         return $data;
     }
+
 }
