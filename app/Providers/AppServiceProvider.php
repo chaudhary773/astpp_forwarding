@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use Filament\Support\Facades\FilamentView;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;

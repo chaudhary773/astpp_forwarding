@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Did extends Model
 {
@@ -18,8 +17,8 @@ class Did extends Model
     protected $hidden = ['pivot'];
     protected  $guarded = [];
 
-    const CREATED_AT = 'assign_date';
-    const UPDATED_AT = 'last_modified_date';
+    public const CREATED_AT = 'assign_date';
+    public const UPDATED_AT = 'last_modified_date';
 
     protected $casts = [
         'assign_date' => 'datetime',

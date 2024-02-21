@@ -4,18 +4,13 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\LiveCallResource\Pages;
 use App\Filament\Resources\LiveCallResource\RelationManagers;
-use App\Models\Campaign;
 use App\Models\LiveCall;
-use App\Models\Target;
-use Carbon\Carbon;
-use Filament\Forms;
-use Filament\Forms\Form;
+use DateTime;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LiveCallResource extends Resource
 {
@@ -60,8 +55,8 @@ class LiveCallResource extends Resource
                 Tables\Columns\TextColumn::make('')
                     ->label('Duration')
                     ->getStateUsing(function (LiveCall $record) {
-                        $startDate = new \DateTime($record['answer_time']);
-                        $endDate = new \DateTime(now());
+                        $startDate = new DateTime($record['answer_time']);
+                        $endDate = new DateTime(now());
 //                        $to = Carbon::createFromFormat('Y-m-d H:i:s', $record['answer_time']);
 //                        $from = Carbon::createFromFormat('Y-m-d H:i:s', now());
                       // dd($to, $from);

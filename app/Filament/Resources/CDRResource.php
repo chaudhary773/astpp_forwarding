@@ -1,12 +1,10 @@
 <?php
 namespace App\Filament\Resources;
-use App\Filament\Exports\CDRExporter;
 use App\Filament\Resources\CDRResource\Pages;
 use App\Models\CDR;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\ExportBulkAction as DefaultExportBulkAction;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;

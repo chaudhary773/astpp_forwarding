@@ -14,7 +14,9 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements HasName, FilamentUser
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     protected $table = 'accounts';
     protected $primaryKey = 'id';
@@ -48,11 +50,10 @@ class User extends Authenticatable implements HasName, FilamentUser
         'is_recording' => 'boolean',
     ];
 
-
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            return str_ends_with($this->number, 'admin') && $this->type == -1;
+             return str_ends_with($this->number, 'admin') && $this->type == -1;
         }
         return $this->isActive();
     }
@@ -61,7 +62,6 @@ class User extends Authenticatable implements HasName, FilamentUser
     {
         return $this->getAttributeValue('status') == 0;
     }
-
 
     public function getFilamentName(): string
     {
@@ -78,9 +78,8 @@ class User extends Authenticatable implements HasName, FilamentUser
         return  $this->hasMany(Did::class, 'accountid');
     }
 
-    public function call_block(): HasMany
+    public function callBlock(): HasMany
     {
-        return  $this->hasMany(CallBlock::class, 'customer_id');
+        return  $this->hasMany(CallBlock::class, 'customer_id', 'id');
     }
-
 }

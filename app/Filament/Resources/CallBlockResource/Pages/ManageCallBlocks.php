@@ -4,15 +4,11 @@ namespace App\Filament\Resources\CallBlockResource\Pages;
 
 use App\Filament\Resources\CallBlockResource;
 use App\Models\CallBlock;
-use App\Models\Campaign;
-use Closure;
 use Filament\Actions;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Pages\ManageRecords;
 use Illuminate\Database\Eloquent\Model;
-use JetBrains\PhpStorm\NoReturn;
 
 class ManageCallBlocks extends ManageRecords
 {
@@ -27,7 +23,7 @@ class ManageCallBlocks extends ManageRecords
                     $data['customer_id'] = auth()->id();
                     $data['variations'][] = ltrim($data['number'], 1);
                     $data['variations'][] = $data['number'];
-                    $data['variations'][] = "+".$data['number'];
+                    $data['variations'][] = '+' .$data['number'];
                     return $data;
                      }
                 )

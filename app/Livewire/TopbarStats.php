@@ -2,7 +2,6 @@
 
 namespace App\Livewire;
 
-use App\Models\User;
 use Illuminate\Support\Number;
 use Livewire\Component;
 

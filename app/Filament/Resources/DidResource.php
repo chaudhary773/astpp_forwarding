@@ -6,15 +6,11 @@ use App\Filament\Resources\DidResource\Pages;
 use App\Filament\Resources\DidResource\RelationManagers;
 use App\Models\Campaign;
 use App\Models\Did;
-use Filament\Forms;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DidResource extends Resource
 {

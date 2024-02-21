@@ -6,7 +6,6 @@ use App\Filament\Resources\CampaignResource\Pages;
 use App\Filament\Resources\CampaignResource\RelationManagers;
 use App\Models\Campaign;
 use App\Models\Did;
-use App\Models\Target;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;

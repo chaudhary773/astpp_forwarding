@@ -1,10 +1,14 @@
-<x-filament-breezy::grid-section md=2 title="{{ __('filament-breezy::default.profile.2fa.title') }}" description="{{ __('filament-breezy::default.profile.2fa.description') }}">
+@php use Illuminate\Support\Arr; @endphp
+@php use function Filament\Support\get_color_css_variables; @endphp
+<x-filament-breezy::grid-section md=2 title="{{ __('filament-breezy::default.profile.2fa.title') }}"
+                                 description="{{ __('filament-breezy::default.profile.2fa.description') }}">
 
     <x-filament::card>
 
         @if($this->showRequiresTwoFactorAlert())
 
-            <div style="{{ \Illuminate\Support\Arr::toCssStyles([\Filament\Support\get_color_css_variables('danger',shades: [300, 400, 500, 600])]) }}" class="p-4 rounded bg-custom-500">
+            <div style="{{ Arr::toCssStyles([get_color_css_variables('danger',shades: [300, 400, 500, 600])]) }}"
+                 class="p-4 rounded bg-custom-500">
                 <div class="flex">
                     <div class="flex-shrink-0">
                         @svg('heroicon-s-shield-exclamation', 'w-5 h-5 text-danger-600')
@@ -41,11 +45,11 @@
                         <p class="text-xs">{{ __('filament-breezy::default.profile.2fa.enabled.store_codes') }}</p>
                         <div>
                             @foreach ($this->recoveryCodes->toArray() as $code )
-                            <span class="inline-flex items-center p-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-900">{{ $code }}</span>
+                                <span class="inline-flex items-center p-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-900">{{ $code }}</span>
                             @endforeach
                         </div>
                         <div class="inline-block text-xs">
-                            <x-filament-breezy::clipboard-link :data="$this->recoveryCodes->join(',')" />
+                            <x-filament-breezy::clipboard-link :data="$this->recoveryCodes->join(',')"/>
                         </div>
                     </div>
                 @endif
@@ -68,12 +72,12 @@
                     <div class="px-4 space-y-3">
                         <p class="text-xs">{{ __('filament-breezy::default.profile.2fa.enabled.store_codes') }}</p>
                         <div>
-                        @foreach ($this->recoveryCodes->toArray() as $code )
-                            <span class="inline-flex items-center p-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-900">{{ $code }}</span>
-                        @endforeach
+                            @foreach ($this->recoveryCodes->toArray() as $code )
+                                <span class="inline-flex items-center p-1 text-xs font-medium text-gray-800 bg-gray-100 rounded-full dark:bg-gray-900">{{ $code }}</span>
+                            @endforeach
                         </div>
                         <div class="inline-block text-xs">
-                            <x-filament-breezy::clipboard-link :data="$this->recoveryCodes->join(',')" />
+                            <x-filament-breezy::clipboard-link :data="$this->recoveryCodes->join(',')"/>
                         </div>
                     </div>
                 </div>
@@ -87,5 +91,5 @@
 
         @endunless
     </x-filament::card>
-    <x-filament-actions::modals />
+    <x-filament-actions::modals/>
 </x-filament-breezy::grid-section>

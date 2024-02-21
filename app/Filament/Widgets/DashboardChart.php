@@ -2,9 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Campaign;
 use App\Models\CDR;
-use Filament\Support\Colors\Color;
 use Filament\Widgets\ChartWidget;
 use Flowframe\Trend\Trend;
 use Flowframe\Trend\TrendValue;

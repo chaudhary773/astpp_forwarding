@@ -5,7 +5,6 @@ namespace App\Filament\Resources\CampaignResource\Pages;
 use App\Filament\Resources\CampaignResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Database\Eloquent\Model;
 
 class EditCampaign extends EditRecord
 {

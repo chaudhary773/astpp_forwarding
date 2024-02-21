@@ -5,11 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use mysql_xdevapi\Collection;
-use mysql_xdevapi\CollectionAdd;
 
 class Campaign extends Model
 {
@@ -22,8 +18,8 @@ class Campaign extends Model
 
     protected $guarded = [];
 
-    const CREATED_AT = 'create_date';
-    const UPDATED_AT = 'modified_date';
+    public const CREATED_AT = 'create_date';
+    public const UPDATED_AT = 'modified_date';
 
     public function accounts(): BelongsTo
     {

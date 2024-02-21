@@ -19,6 +19,7 @@ class TargetResource extends Resource
     protected static ?string $model = Target::class;
 
     protected static ?string $navigationGroup = 'Campaigns';
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function getEloquentQuery(): Builder
@@ -32,7 +33,7 @@ class TargetResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('number')
-                    ->description(fn(Target $record): string => $record->name ?? '')
+                    ->description(fn (Target $record): string => $record->name ?? '')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -41,34 +42,33 @@ class TargetResource extends Resource
                     ->badge()
                     ->label('TA')
                     ->color('success')
-                    ->getStateUsing((fn(Target $record) => $record->dailyCdrs
+                    ->getStateUsing((fn (Target $record) => $record->dailyCdrs
                         ->where('missed', false)
                         ->count())
                     ),
 
-                        Tables\Columns\TextColumn::make('today_missed')
+                Tables\Columns\TextColumn::make('today_missed')
                     ->label('TM')
                     ->badge()
                     ->color('warning')
-                    ->getStateUsing((fn(Target $record) => $record->dailyCdrs
-                            ->where('missed', true)
-                            ->count())
+                    ->getStateUsing((fn (Target $record) => $record->dailyCdrs
+                        ->where('missed', true)
+                        ->count())
                     ),
-
 
                 Tables\Columns\TextColumn::make('daily_cap')
                     ->label('DC')
                     ->html()
-                    ->formatStateUsing(fn(Target $record) => self::getDailyCap($record)),
+                    ->formatStateUsing(fn (Target $record) => self::getDailyCap($record)),
 
                 Tables\Columns\TextColumn::make('monthlycap')
-                    ->label("MC")
+                    ->label('MC')
                     ->html(true)
-                    ->formatStateUsing(fn(Target $record) => self::getMonthlyCap($record)),
+                    ->formatStateUsing(fn (Target $record) => self::getMonthlyCap($record)),
 
                 Tables\Columns\TextColumn::make('concurrent_calls')
                     ->label('CC')
-                    ->formatStateUsing(fn(Target $record) => self::getConcurrentCap($record)),
+                    ->formatStateUsing(fn (Target $record) => self::getConcurrentCap($record)),
 
                 Tables\Columns\TextColumn::make('campaign.camp_name')
                     ->sortable()
@@ -100,13 +100,13 @@ class TargetResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ReplicateAction::make()
                     ->color('secondary')
-                    ->excludeAttributes(['campaign_id',])
+                    ->excludeAttributes(['campaign_id'])
                     ->form([
                         Forms\Components\Select::make('campaign_id')
                             ->label('Select Campaign')
                             ->native(false)
                             ->relationship('campaign', 'campaign_id')
-                            ->options(fn(): array => Campaign::where('customer_id', auth()->id())->pluck('camp_name', 'id')->toArray())
+                            ->options(fn (): array => Campaign::where('customer_id', auth()->id())->pluck('camp_name', 'id')->toArray())
                             ->required(),
                     ])
                     ->beforeReplicaSaved(function (Target $replica, array $data): void {
@@ -122,38 +122,22 @@ class TargetResource extends Resource
             ]);
     }
 
-//    private static function getTodayAnswered(Target $record): ?string
-//    {
-//        return $record->dailyAnswered->count();
-////        return $record->dailyCdrs()
-////            ->where('date', '=', now()->toDateString())
-////            ->where('missed', 0)
-////            ->count('id');
-//    }
-
-//    private static function getTodayMissed(Target $record): ?string
-//    {
-//       // dd($record->dailyMissed);
-//        return $record->dailyMissed->count();
-//    }
-
     private static function getDailyCap(Target $record): ?string
     {
         $dailyCount = $record->dailyCdrs->count();
-        return $record->daily_cap == -1 ? $dailyCount . '/UL' : $dailyCount . '/' . $record->daily_cap;
+
+        return $record->daily_cap == -1 ? $dailyCount.'/UL' : $dailyCount.'/'.$record->daily_cap;
     }
 
     private static function getMonthlyCap(Target $record): ?string
     {
-        $month = now()->format('Y-m');
         $monthlyCount = $record->campCdrs->count();
         return $record->monthlycap == -1 ? $monthlyCount . '/UL' : $monthlyCount . '/' . $record->monthlycap;
     }
 
     private static function getConcurrentCap(Target $record): ?string
     {
-        $CCcount = $record->liveCdrs->count();
-        return $record->concurrent_calls == 0 ? $CCcount . '/UL' : $CCcount . '/' . $record->concurrent_calls;
+        return $record->liveCdrs->count() .'/'. $record->concurrent_calls;
     }
 
     public static function form(Form $form): Form
@@ -177,7 +161,7 @@ class TargetResource extends Resource
                                 Forms\Components\Select::make('campaign_id')
                                     ->label('Campaign')
                                     ->relationship('campaign', 'campaign_id')
-                                    ->options(fn(): array => Campaign::where('customer_id', auth()->id())->pluck('camp_name', 'id')->toArray())
+                                    ->options(fn (): array => Campaign::where('customer_id', auth()->id())->pluck('camp_name', 'id')->toArray())
                                     ->required(),
 
                                 Forms\Components\TextInput::make('description')
@@ -263,9 +247,8 @@ class TargetResource extends Resource
         ];
     }
 
-//    public static function getNavigationBadge(): ?string
-//    {
-//        return static::getModel()::allTargets()->count();
-//    }
-
+    //    public static function getNavigationBadge(): ?string
+    //    {
+    //        return static::getModel()::allTargets()->count();
+    //    }
 }

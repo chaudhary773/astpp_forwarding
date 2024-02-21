@@ -3,8 +3,6 @@ namespace App\Livewire;
 
 use Filament\Facades\Filament;
 use Filament\Forms;
-use Filament\Infolists\Components\TextEntry;
-use Filament\Notifications\Notification;
 use Jeffgreco13\FilamentBreezy\Livewire\PersonalInfo;
 
 //use Jeffgreco13\FilamentBreezy\Livewire\PersonalInfo;
